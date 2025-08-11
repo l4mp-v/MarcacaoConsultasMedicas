@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { authService } from '../services/auth';
+import { authApiService } from '../services/AuthApi';  // ← Serviço da API
+import { apiClient } from '../services/api';
 import { AuthContextData, LoginCredentials, RegisterData, User } from '../types/auth';
 
 // Chaves de armazenamento
@@ -22,12 +23,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const loadStoredUser = async () => {
         try {
-            const storedUser = await authService.getStoredUser();
-            if (storedUser) {
-                setUser(storedUser);
+            const storedToken = await AsyncStorage.getItem(STORAGE_KEYS.TOKEN);
+            const storedUser = await AsyncStorage.getItem(STORAGE_KEYS.USER);
+            if (storedToken && storedUser) {
+                // Configura o token no cliente da API  ← NOVO!
+                apiClient.setToken(storedToken);
+                setUser(JSON.parse(storedUser));
             }
         } catch (error) {
             console.error('Erro ao carregar usuário:', error);
+            // Se houver erro, limpa os dados armazenados  ← NOVO!
+            await AsyncStorage.removeItem(STORAGE_KEYS.USER);
+            await AsyncStorage.removeItem(STORAGE_KEYS.TOKEN);
         } finally {
             setLoading(false);
         }
@@ -35,7 +42,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const loadRegisteredUsers = async () => {
         try {
-            await authService.loadRegisteredUsers();
+            await authApiService.loadRegisteredUsers(); // ← Correção aqui!
         } catch (error) {
             console.error('Erro ao carregar usuários registrados:', error);
         }
@@ -43,7 +50,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const signIn = async (credentials: LoginCredentials) => {
         try {
-            const response = await authService.signIn(credentials);
+            const response = await authApiService.signIn(credentials);  // ← Login real!
             setUser(response.user);
             await AsyncStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(response.user));
             await AsyncStorage.setItem(STORAGE_KEYS.TOKEN, response.token);
@@ -54,7 +61,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const register = async (data: RegisterData) => {
         try {
-            const response = await authService.register(data);
+            const response = await authApiService.register(data); // ← Correção aqui!
             setUser(response.user);
             await AsyncStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(response.user));
             await AsyncStorage.setItem(STORAGE_KEYS.TOKEN, response.token);
@@ -65,7 +72,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const signOut = async () => {
         try {
-            await authService.signOut();
+            await authApiService.signOut();  // ← Correção aqui!
             setUser(null);
             await AsyncStorage.removeItem(STORAGE_KEYS.USER);
             await AsyncStorage.removeItem(STORAGE_KEYS.TOKEN);
@@ -87,4 +94,4 @@ export const useAuth = () => {
         throw new Error('useAuth must be used within an AuthProvider');
     }
     return context;
-}; 
+};
