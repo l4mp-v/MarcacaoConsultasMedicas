@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components/native';
-import { Input, Button, Text } from 'react-native-elements';
+import { Input, Button, Text, Image } from 'react-native-elements';
 import { useAuth } from '../contexts/AuthContext';
 import theme from '../styles/theme';
 import { ViewStyle } from 'react-native';
@@ -32,12 +32,11 @@ const LoginScreen: React.FC = () => {
     }
   };
 
-
-
   return (
     <Container>
+      <Logo source={require('../../assets/Logo.png')} resizeMode="contain" />
       <Title>Agenda Médica</Title>
-      
+
       <Input
         placeholder="Email"
         value={email}
@@ -116,7 +115,14 @@ const Container = styled.View`
   flex: 1;
   padding: 20px;
   justify-content: center;
+  align-items: center;
   background-color: ${theme.colors.background};
+`;
+
+const Logo = styled.Image`
+  width: 150px;
+  height: 150px;
+  margin-bottom: 20px;
 `;
 
 const Title = styled.Text`
@@ -133,4 +139,4 @@ const ErrorText = styled.Text`
   margin-bottom: 10px;
 `;
 
-export default LoginScreen; 
+export default LoginScreen;
