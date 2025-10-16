@@ -3,13 +3,29 @@ import styled from 'styled-components/native';
 import { ScrollView, ViewStyle, TextStyle } from 'react-native';
 import { Button, ListItem, Text } from 'react-native-elements';
 import { useAuth } from '../contexts/AuthContext';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useFocusEffect } from '@react-navigation/native';
 import { RootStackParamList } from '../types/navigation';
 import theme from '../styles/theme';
 import Header from '../components/Header';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+// 📸 Imagens fixas para médicos e pacientes
+const doctorImages = [
+  require('../../assets/med1.webp'),
+  require('../../assets/med2.png'),
+  require('../../assets/med3.jpg'),
+  require('../../assets/med4.jpg'),
+  require('../../assets/med5.jpg'),
+];
+
+const patientImages = [
+  require('../../assets/dot1.jpg'),
+  require('../../assets/dot2.png'),
+  require('../../assets/dot3.jpg'),
+  require('../../assets/dot4.webp'),
+  require('../../assets/dot5.webp'),
+];
 
 type PatientDashboardScreenProps = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'PatientDashboard'>;
@@ -53,6 +69,15 @@ const getStatusText = (status: string) => {
   }
 };
 
+// 🔄 Gera imagem fixa com base no nome do médico (mesmo médico = mesma imagem)
+const getDoctorImage = (doctorName: string) => {
+  const index =
+    Math.abs(
+      doctorName.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
+    ) % doctorImages.length;
+  return doctorImages[index];
+};
+
 const PatientDashboardScreen: React.FC = () => {
   const { user, signOut } = useAuth();
   const navigation = useNavigation<PatientDashboardScreenProps['navigation']>();
@@ -76,7 +101,6 @@ const PatientDashboardScreen: React.FC = () => {
     }
   };
 
-  // Carrega as consultas quando a tela estiver em foco
   useFocusEffect(
     React.useCallback(() => {
       loadAppointments();
@@ -110,7 +134,9 @@ const PatientDashboardScreen: React.FC = () => {
         ) : (
           appointments.map((appointment) => (
             <AppointmentCard key={appointment.id}>
-              <ListItem.Content>
+              <ListItem.Content style={{ alignItems: 'center' }}>
+                <DoctorImage source={getDoctorImage(appointment.doctorName)} />
+
                 <ListItem.Title style={styles.patientName as TextStyle}>
                   Paciente: {appointment.patientName}
                 </ListItem.Title>
@@ -204,6 +230,13 @@ const AppointmentCard = styled(ListItem)`
   border-color: ${theme.colors.border};
 `;
 
+const DoctorImage = styled.Image`
+  width: 80px;
+  height: 80px;
+  border-radius: 40px;
+  margin-bottom: 10px;
+`;
+
 const LoadingText = styled.Text`
   text-align: center;
   color: ${theme.colors.text};
@@ -232,4 +265,4 @@ const StatusText = styled.Text<StyledProps>`
   font-weight: 500;
 `;
 
-export default PatientDashboardScreen; 
+export default PatientDashboardScreen;
