@@ -3,7 +3,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Appointment } from '../../../types/appointments';
 import { User } from '../../../types/auth';
-import { authApiService } from '../../../services/authApi';
+import { authApiService } from '../../../services/AuthApi';
 
 export const useHomeScreen = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);

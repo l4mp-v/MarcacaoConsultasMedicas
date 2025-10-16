@@ -5,7 +5,7 @@ import { Platform, View, TouchableOpacity, Alert } from 'react-native';
 import theme from '../styles/theme';
 import { Doctor } from '../types/doctors';
 import { Appointment } from '../types/appointments';
-import { authApiService } from '../services/authApi';
+import { authApiService } from '../services/AuthApi';
 import { specialtiesApiService, Specialty } from '../services/specialtiesApi';
 import { User } from '../types/auth';
 

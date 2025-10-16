@@ -11,7 +11,7 @@ import Header from '../components/Header';
 import DoctorList from '../components/DoctorList';
 import TimeSlotList from '../components/TimeSlotList';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { authApiService } from '../services/authApi';
+import { authApiService } from '../services/AuthApi';
 import { User } from '../types/auth';
 
 type CreateAppointmentScreenProps = {
